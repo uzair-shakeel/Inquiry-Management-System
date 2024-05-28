@@ -9,13 +9,16 @@ const DashboardCS = () => {
         const response = await fetch("http://localhost:5000/api/inquiries");
         if (response.ok) {
           const data = await response.json();
-          // Filter out unnecessary fields like _id, createdAt, updatedAt, __v
+          // Filter out unnecessary fields and set status to "Pending" if not provided
           const filteredData = data
             .filter((inquiry) => inquiry.department === "AI")
-            .map(({ _id, createdAt, updatedAt, __v, ...rest }) => rest);
+            .map(({ _id, createdAt, updatedAt, __v, ...rest }) => ({
+              ...rest,
+              status: rest.status || "Pending",
+            }));
           setCSData(filteredData);
         } else {
-          throw new Error("Failed to fetch CS department inquiries");
+          throw new Error("Failed to fetch AI department inquiries");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -25,10 +28,10 @@ const DashboardCS = () => {
     fetchCSData();
   }, []);
 
-  // Calculate total, pending, and resolved inquiries for CS department
+  // Calculate total, pending, and resolved inquiries for AI department
   const totalInquiries = csData.length;
   const pendingInquiries = csData.filter(
-    (data) => !data.status || data.status === "Pending"
+    (data) => data.status === "Pending"
   ).length;
   const resolvedInquiries = csData.filter(
     (data) => data.status === "Resolved"

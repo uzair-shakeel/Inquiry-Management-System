@@ -13,7 +13,14 @@ const DashboardCS = () => {
           const filteredData = data
             .filter((inquiry) => inquiry.department === "CS")
             .map(({ _id, createdAt, updatedAt, __v, ...rest }) => rest);
-          setCSData(filteredData);
+
+          // Ensure every entry has a status field, default to "Pending" if not present
+          const dataWithStatus = filteredData.map((inquiry) => ({
+            ...inquiry,
+            status: inquiry.status || "Pending",
+          }));
+
+          setCSData(dataWithStatus);
         } else {
           throw new Error("Failed to fetch CS department inquiries");
         }
@@ -28,7 +35,7 @@ const DashboardCS = () => {
   // Calculate total, pending, and resolved inquiries for CS department
   const totalInquiries = csData.length;
   const pendingInquiries = csData.filter(
-    (data) => !data.status || data.status === "Pending"
+    (data) => data.status === "Pending"
   ).length;
   const resolvedInquiries = csData.filter(
     (data) => data.status === "Resolved"

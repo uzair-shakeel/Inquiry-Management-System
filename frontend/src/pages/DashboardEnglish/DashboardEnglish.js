@@ -12,10 +12,13 @@ const DashboardCS = () => {
           // Filter out unnecessary fields like _id, createdAt, updatedAt, __v
           const filteredData = data
             .filter((inquiry) => inquiry.department === "English")
-            .map(({ _id, createdAt, updatedAt, __v, ...rest }) => rest);
+            .map(({ _id, createdAt, updatedAt, __v, ...rest }) => ({
+              ...rest,
+              status: rest.status || "Pending",
+            }));
           setCSData(filteredData);
         } else {
-          throw new Error("Failed to fetch CS department inquiries");
+          throw new Error("Failed to fetch English department inquiries");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -25,7 +28,7 @@ const DashboardCS = () => {
     fetchCSData();
   }, []);
 
-  // Calculate total, pending, and resolved inquiries for CS department
+  // Calculate total, pending, and resolved inquiries for English department
   const totalInquiries = csData.length;
   const pendingInquiries = csData.filter(
     (data) => data.status === "Pending"
@@ -55,7 +58,7 @@ const DashboardCS = () => {
           <div className="p-6 bg-white rounded-lg shadow-md border w-full">
             <h2 className="text-lg font-semibold mb-2">Pending Inquiries</h2>
             <p className="text-3xl font-bold text-yellow-600">
-              {totalInquiries}
+              {pendingInquiries}
             </p>
           </div>
           <div className="p-6 bg-white rounded-lg shadow-md border w-full">
@@ -107,7 +110,7 @@ const DashboardCS = () => {
                     ))}
                     <td className="py-3 px-4 border-b">
                       <select
-                        value={formData.status}
+                        value={formData.status || "Pending"}
                         onChange={(e) =>
                           handleStatusChange(index, e.target.value)
                         }
