@@ -44,7 +44,10 @@ router.post("/register", async (req, res) => {
       department,
       departmentPrograms,
     });
+    console.log("Running");
     await user.save();
+
+    console.log(user);
 
     const payload = { user: { id: user.id } };
     jwt.sign(

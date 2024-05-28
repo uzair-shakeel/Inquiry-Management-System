@@ -1,26 +1,37 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext'; // Update the import path as necessary
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext"; // Update the import path as necessary
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Hardcoded credentials
-    const hardcodedEmail = 'vikramkumar2k3@gmail.com';
-    const hardcodedPassword = 'vikramkumar';
+    try {
+      const response = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (email === hardcodedEmail && password === hardcodedPassword) {
-      login();
-      navigate('/form'); // Navigate to the form page after login
-    } else {
-      setError('Invalid email or password');
+      const data = await response.json();
+
+      if (response.ok) {
+        login(); // Update the context state to indicate the user is logged in
+        navigate("/form"); // Navigate to the form page after login
+      } else {
+        setError(data.message || "Login failed");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -30,7 +41,12 @@ const Login = () => {
         <h2 className="text-2xl font-bold mb-8 text-center">Login</h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -41,7 +57,12 @@ const Login = () => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
             <input
               type="password"
               id="password"
@@ -55,13 +76,16 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className='w-full bg-blue-500 text-white p-2 rounded-md transition duration-300 hover:bg-blue-600'
+              className="w-full bg-blue-500 text-white p-2 rounded-md transition duration-300 hover:bg-blue-600"
             >
               Login
             </button>
           </div>
           <p className="text-center text-sm text-gray-600">
-            Don't have an account? <a href="/" className="text-blue-500">Sign up</a>
+            Don't have an account?{" "}
+            <a href="/" className="text-blue-500">
+              Sign up
+            </a>
           </p>
         </form>
       </div>

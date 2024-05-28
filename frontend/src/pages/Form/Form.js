@@ -1,16 +1,13 @@
-// src/pages/Form/Form.js
+import React, { useState } from "react";
 
-import React, { useState } from 'react';
-
-const Form = ({ onSubmit }) => {
+const Form = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    fathersName: '',
-    rollNo: '',
-    department: '',
-    semester: '',
+    name: "",
+    fathersName: "",
+    rollNumber: "",
+    department: "",
+    description: "",
     file: null,
-    fileURL: '',
   });
 
   const handleChange = (e) => {
@@ -20,32 +17,55 @@ const Form = ({ onSubmit }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const fileURL = URL.createObjectURL(file);
-      setFormData({ ...formData, file: file, fileURL: fileURL });
-    }
+    console.log("Selected file:", file); // Log the selected file
+    setFormData((prev) => ({ ...prev, file }));
+    console.log("Selected:", formData); // Log the selected file
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
-    setFormData({
-      name: '',
-      fathersName: '',
-      rollNo: '',
-      department: '',
-      semester: '',
-      file: null,
-      fileURL: '',
-    });
+
+    try {
+      const response = await fetch("http://localhost:5000/api/inquiries", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        alert("Inquiry submitted successfully");
+        setFormData({
+          name: "",
+          fathersName: "",
+          rollNumber: "",
+          department: "",
+          description: "",
+          file: null,
+        });
+      } else {
+        const errorMessage = await response.text(); // Get the error message as text
+        alert(errorMessage || "Failed to submit inquiry");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="bg-white p-10 rounded-lg shadow-2xl w-full ">
-        <h2 className="text-3xl font-bold mb-8 text-gray-900 text-center">Student Inquiry Form</h2>
-        <div className="mb-6 w-full">
-          <label htmlFor="name" className="w-full block text-gray-700 font-semibold">Name</label>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md"
+      >
+        <h2 className="text-3xl font-bold mb-8 text-gray-900 text-center">
+          Student Inquiry Form
+        </h2>
+        <div className="mb-6">
+          <label htmlFor="name" className="block text-gray-700 font-semibold">
+            Name
+          </label>
           <input
             type="text"
             id="name"
@@ -56,8 +76,13 @@ const Form = ({ onSubmit }) => {
             required
           />
         </div>
-        <div className="mb-6 w-full">
-          <label htmlFor="fathersName" className=" w-full block text-gray-700 font-semibold">Father's Name</label>
+        <div className="mb-6">
+          <label
+            htmlFor="fathersName"
+            className="block text-gray-700 font-semibold"
+          >
+            Father's Name
+          </label>
           <input
             type="text"
             id="fathersName"
@@ -68,44 +93,66 @@ const Form = ({ onSubmit }) => {
             required
           />
         </div>
-        <div className="mb-6  w-full">
-          <label htmlFor="rollNo" className="block w-full text-gray-700 font-semibold">Roll No</label>
+        <div className="mb-6">
+          <label
+            htmlFor="rollNumber"
+            className="block text-gray-700 font-semibold"
+          >
+            Roll No
+          </label>
           <input
             type="text"
-            id="rollNo"
-            name="rollNo"
-            value={formData.rollNo}
+            id="rollNumber"
+            name="rollNumber"
+            value={formData.rollNumber}
             onChange={handleChange}
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
-        <div className="mb-6 w-full">
-          <label htmlFor="department" className="block w-full text-gray-700 font-semibold">Department</label>
-          <input
-            type="text"
+        <div className="mb-6">
+          <label
+            htmlFor="department"
+            className="block text-gray-700 font-semibold"
+          >
+            Department
+          </label>
+          <select
             id="department"
             name="department"
             value={formData.department}
             onChange={handleChange}
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-          />
+          >
+            <option value="CS">CS</option>
+            <option value="IT">IT</option>
+            <option value="AI">AI</option>
+            <option value="English">English</option>
+            <option value="BBA">BBA</option>
+          </select>
         </div>
-        <div className="mb-6 w-full">
-          <label htmlFor="semester" className="block w-full text-gray-700 font-semibold">Semester</label>
+        <div className="mb-6">
+          <label
+            htmlFor="description"
+            className="block text-gray-700 font-semibold"
+          >
+            description
+          </label>
           <input
             type="text"
-            id="semester"
-            name="semester"
-            value={formData.semester}
+            id="description"
+            name="description"
+            value={formData.description}
             onChange={handleChange}
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
-        <div className="mb-6 w-full">
-          <label htmlFor="file" className="block w-full text-gray-700 font-semibold">Choose File</label>
+        <div className="mb-6">
+          <label htmlFor="file" className="block text-gray-700 font-semibold">
+            Choose File
+          </label>
           <input
             type="file"
             id="file"
