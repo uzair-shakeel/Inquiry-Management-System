@@ -6,6 +6,7 @@ import {
   Link,
   Navigate,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import Logo from "./assets/logo-design.png";
 import emailjs from "emailjs-com";
@@ -234,8 +235,8 @@ const ConditionalNavbar = () => {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("userRole");
-
+    localStorage.removeItem("role");
+    window.location.href = "/login";
     // Perform any additional logout actions
   };
 
