@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
   batch: { type: String, required: true },
   department: { type: String, required: true },
   departmentPrograms: { type: String, required: true },
+  role: { type: String, enum: ["admin", "user", "faculty"], default: "user" },
 });
 
 UserSchema.pre("save", async function (next) {

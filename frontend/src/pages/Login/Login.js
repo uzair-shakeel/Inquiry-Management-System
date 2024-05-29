@@ -25,7 +25,16 @@ const Login = () => {
 
       if (response.ok) {
         login(); // Update the context state to indicate the user is logged in
-        navigate("/form"); // Navigate to the form page after login
+        localStorage.setItem("role", data.role);
+
+        {
+          data.role === "admin"
+            ? navigate("/adminpanel")
+            : data.role === "user"
+            ? navigate("/form")
+            : navigate("/dashboard/cs");
+        }
+        // Navigate to the form page after login
       } else {
         setError(data.message || "Login failed");
       }

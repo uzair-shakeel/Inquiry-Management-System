@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     registrationNumber: "",
     name: "",
@@ -36,10 +38,12 @@ const Signup = () => {
         },
         body: JSON.stringify(formData),
       });
+      console.log(formData);
 
       const data = await response.json();
       if (response.ok) {
         console.log("Response:", data);
+        navigate("/login");
         // Handle success, e.g., redirect or display a success message
       } else {
         console.error("Error:", data);

@@ -5,6 +5,7 @@ import {
   Route,
   Link,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import Logo from "./assets/logo-design.png";
 import emailjs from "emailjs-com";
@@ -75,67 +76,7 @@ const App = () => {
     <AuthProvider>
       <Router>
         <div className="min-h-screen flex flex-col">
-          <nav className="bg-blue-600 w-full p-4 flex items-center justify-between">
-            <img src={Logo} alt="Logo" className="w-[120px]" />
-            <ul className="flex items-center gap-8">
-              <li>
-                <Link
-                  to="/form"
-                  className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
-                >
-                  Form
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/adminpanel"
-                  className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
-                >
-                  Admin Panel
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/cs"
-                  className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
-                >
-                  Dashboard CS
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/it"
-                  className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
-                >
-                  Dashboard IT
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/bba"
-                  className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
-                >
-                  Dashboard BBA
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/english"
-                  className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
-                >
-                  Dashboard English
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/ai"
-                  className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
-                >
-                  Dashboard AI
-                </Link>
-              </li>
-            </ul>
-          </nav>
+          <ConditionalNavbar />
           <main className="flex-grow p-6">
             <div className="fade-in">
               <Routes>
@@ -203,6 +144,120 @@ const App = () => {
         </div>
       </Router>
     </AuthProvider>
+  );
+};
+
+const ConditionalNavbar = () => {
+  const location = useLocation();
+  const excludedPaths = ["/login", "/"];
+  const userRole = localStorage.getItem("role");
+
+  let navbarLinks = null;
+
+  if (userRole) {
+    if (userRole === "admin") {
+      navbarLinks = (
+        <>
+          <li>
+            <Link
+              to="/adminpanel"
+              className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
+            >
+              Admin Panel
+            </Link>
+          </li>
+        </>
+      );
+    } else if (userRole === "user") {
+      navbarLinks = (
+        <>
+          <li>
+            <Link
+              to="/form"
+              className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
+            >
+              Form
+            </Link>
+          </li>
+        </>
+      );
+    } else if (userRole === "faculty") {
+      navbarLinks = (
+        <>
+          <li>
+            <Link
+              to="/dashboard/cs"
+              className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
+            >
+              Dashboard CS
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard/it"
+              className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
+            >
+              Dashboard IT
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard/bba"
+              className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
+            >
+              Dashboard BBA
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard/english"
+              className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
+            >
+              Dashboard English
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard/ai"
+              className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
+            >
+              Dashboard AI
+            </Link>
+          </li>
+        </>
+      );
+    }
+  }
+
+  if (excludedPaths.includes(location.pathname) || !userRole) {
+    return null;
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("userRole");
+
+    // Perform any additional logout actions
+  };
+
+  return (
+    <nav className="bg-blue-600 w-full p-4 flex items-center justify-between">
+      <img src={Logo} alt="Logo" className="w-[120px]" />
+      <ul className="flex items-center gap-8">
+        {navbarLinks}
+        {userRole && (
+          <li>
+            <Link to={"/login"}>
+              <button
+                onClick={handleLogout}
+                className="text-lg font-semibold text-white hover:text-gray-300 transition duration-300"
+              >
+                Logout
+              </button>
+            </Link>
+          </li>
+        )}
+      </ul>
+    </nav>
   );
 };
 

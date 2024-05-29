@@ -79,14 +79,24 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
 
-    const payload = { user: { id: user.id } };
+    // Create JWT payload
+    const payload = {
+      user: { id: user.id },
+    };
+
+    // Generate JWT token
     jwt.sign(
       payload,
       "your_jwt_secret",
       { expiresIn: 360000 },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+
+        // Set token in cookie
+        res.cookie("token", token, { httpOnly: true, maxAge: 3600000 }); // Max age in milliseconds
+
+        // Send role in localStorage
+        res.json({ role: user.role });
       }
     );
   } catch (err) {
@@ -94,5 +104,7 @@ router.post("/login", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
+module.exports = router;
 
 module.exports = router;
